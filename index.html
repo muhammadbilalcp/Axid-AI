@@ -680,20 +680,27 @@
     window.sendMessage = async function() {
       const input = document.getElementById("chat-input");
       const text = input.value.trim();
-      if (!text || !currentSession || !window.currentUser) return;
+      if (!text) return;
+      if (!window.currentUser) { alert("Debug: not signed in (window.currentUser is null)"); return; }
+      if (!currentSession) { alert("Debug: no active session (currentSession is null) - click + New chat first"); return; }
       input.value = "";
       window.updateSendBtn();
 
-      await addDoc(collection(db, "users", window.currentUser.uid, "sessions", currentSession, "messages"), {
-        role: "user", content: text, createdAt: serverTimestamp()
-      });
-
-      if (messages.length === 0) {
-        await updateDoc(doc(db, "users", window.currentUser.uid, "sessions", currentSession), {
-          title: text.slice(0, 40), updatedAt: serverTimestamp()
+      try {
+        await addDoc(collection(db, "users", window.currentUser.uid, "sessions", currentSession, "messages"), {
+          role: "user", content: text, createdAt: serverTimestamp()
         });
-      } else {
-        await updateDoc(doc(db, "users", window.currentUser.uid, "sessions", currentSession), { updatedAt: serverTimestamp() });
+
+        if (messages.length === 0) {
+          await updateDoc(doc(db, "users", window.currentUser.uid, "sessions", currentSession), {
+            title: text.slice(0, 40), updatedAt: serverTimestamp()
+          });
+        } else {
+          await updateDoc(doc(db, "users", window.currentUser.uid, "sessions", currentSession), { updatedAt: serverTimestamp() });
+        }
+      } catch (e) {
+        alert("Debug: Firestore write failed - " + (e && e.message ? e.message : e));
+        return;
       }
 
       const inner = document.getElementById("messages-inner");
@@ -731,8 +738,9 @@
           role: "assistant", content: reply, createdAt: serverTimestamp()
         });
       } catch (e) {
+        console.error("Axid AI Gemini error:", e);
         await addDoc(collection(db, "users", window.currentUser.uid, "sessions", currentSession, "messages"), {
-          role: "assistant", content: "Something went wrong. Please try again.", createdAt: serverTimestamp()
+          role: "assistant", content: "Something went wrong (" + (e && e.message ? e.message : "unknown error") + "). Please try again.", createdAt: serverTimestamp()
         });
       }
 
