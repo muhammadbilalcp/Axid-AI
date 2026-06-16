@@ -661,6 +661,25 @@
     }
 
 window.newSession = async function() {
+  try {
+    const ref = await addDoc(
+      collection(db, "users", window.currentUser.uid, "sessions"),
+      {
+        title: "New chat",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }
+    );
+    currentSession = ref.id;
+    messages = [];
+    renderSessions();
+    renderMessages();
+    alert("Session created: " + ref.id);
+  } catch (e) {
+    alert("New chat error: " + e.message);
+    console.error(e);
+  }
+};
     alert("newSession started");
     if (!window.currentUser) return;
       const ref = await addDoc(collection(db, "users", window.currentUser.uid, "sessions"), {
