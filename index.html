@@ -660,8 +660,9 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    window.newSession = async function() {
-      if (!window.currentUser) return;
+window.newSession = async function() {
+    alert("newSession started");
+    if (!window.currentUser) return;
       const ref = await addDoc(collection(db, "users", window.currentUser.uid, "sessions"), {
         title: "New chat", createdAt: serverTimestamp(), updatedAt: serverTimestamp()
       });
