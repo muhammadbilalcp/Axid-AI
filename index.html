@@ -677,9 +677,10 @@
       btn.className = (input && currentSession) ? "send-btn ready" : "send-btn";
     };
 
-    window.sendMessage = async function() {
-      const input = document.getElementById("chat-input");
-      const text = input.value.trim();
+window.sendMessage = async function() {
+    alert("sendMessage started");
+    const input = document.getElementById("chat-input");
+    const text = input.value.trim();
       if (!text) return;
       if (!window.currentUser) { alert("Debug: not signed in (window.currentUser is null)"); return; }
       if (!currentSession) { alert("Debug: no active session (currentSession is null) - click + New chat first"); return; }
