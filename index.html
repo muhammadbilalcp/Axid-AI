@@ -284,9 +284,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px
 <!-- CHAT -->
 <div class="page" id="pg-chat">
   <div class="chat-layout">
-    <!-- Mobile sidebar toggle -->
     <button class="mob-sidebar-toggle" onclick="toggleSidebar()" id="mob-tog">☰</button>
-    <!-- Overlay -->
     <div class="sidebar-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
     <div class="sidebar" id="sidebar">
       <div class="sidebar-top">
@@ -393,55 +391,35 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px
 </div>
 
 <script>
-// ─── Theme ───────────────────────────────────────────────────────────────────
-var darkMode = true;
-window.toggleTheme = function(){
-  darkMode = !darkMode;
-  document.body.classList.toggle('light', !darkMode);
-  document.querySelector('.theme-btn').textContent = darkMode ? '🌙' : '☀️';
+var darkMode=true;
+window.toggleTheme=function(){
+  darkMode=!darkMode;
+  document.body.classList.toggle('light',!darkMode);
+  document.querySelector('.theme-btn').textContent=darkMode?'🌙':'☀️';
 };
-
-// ─── Mobile nav ───────────────────────────────────────────────────────────────
-window.toggleMobNav = function(){
-  document.getElementById('mob-drawer').classList.toggle('open');
-};
-window.closeMobNav = function(){
-  document.getElementById('mob-drawer').classList.remove('open');
-};
-
-// ─── Sidebar (mobile) ────────────────────────────────────────────────────────
-window.toggleSidebar = function(){
+window.toggleMobNav=function(){document.getElementById('mob-drawer').classList.toggle('open')};
+window.closeMobNav=function(){document.getElementById('mob-drawer').classList.remove('open')};
+window.toggleSidebar=function(){
   document.getElementById('sidebar').classList.toggle('mob-open');
   document.getElementById('sb-overlay').classList.toggle('on');
 };
-window.closeSidebar = function(){
+window.closeSidebar=function(){
   document.getElementById('sidebar').classList.remove('mob-open');
   document.getElementById('sb-overlay').classList.remove('on');
 };
-
-// ─── Navigation ──────────────────────────────────────────────────────────────
-window.go = function(p){
-  if(p==='chat' && !window._user){go('auth');return}
-  if(p==='admin' && (!window._user || window._user.email!==ADMIN_EMAIL))return;
+window.go=function(p){
+  if(p==='chat'&&!window._user){go('auth');return}
+  if(p==='admin'&&(!window._user||window._user.email!==ADMIN_EMAIL))return;
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-btn,.mob-nav-btn').forEach(el=>el.classList.remove('active'));
-  var pg=document.getElementById('pg-'+p);
-  if(pg)pg.classList.add('active');
-  var nb=document.getElementById('nb-'+p);
-  if(nb)nb.classList.add('active');
-  var mnb=document.getElementById('mnb-'+p);
-  if(mnb)mnb.classList.add('active');
-  if(p==='chat'){
-    var ep=document.getElementById('chat-empty-p');
-    if(ep)ep.textContent=window.innerWidth<=700?'Tap ☰ then "+ New chat" to start':'Click "+ New chat" to start';
-  }
-  if(p==='admin' && window._loadAdmin) window._loadAdmin();
+  var pg=document.getElementById('pg-'+p);if(pg)pg.classList.add('active');
+  var nb=document.getElementById('nb-'+p);if(nb)nb.classList.add('active');
+  var mnb=document.getElementById('mnb-'+p);if(mnb)mnb.classList.add('active');
+  if(p==='chat'){var ep=document.getElementById('chat-empty-p');if(ep)ep.textContent=window.innerWidth<=700?'Tap ☰ then "+ New chat" to start':'Click "+ New chat" to start';}
+  if(p==='admin'&&window._loadAdmin)window._loadAdmin();
 };
-
 var ADMIN_EMAIL='muhammadbilalcp@gmail.com';
 window._user=null;
-
-// ─── Auth mode toggle ────────────────────────────────────────────────────────
 var _authMode='signin';
 window.toggleMode=function(){
   _authMode=_authMode==='signin'?'signup':'signin';
@@ -454,8 +432,6 @@ window.toggleMode=function(){
   document.getElementById('a-sw-l').textContent=su?'Sign in':'Sign up';
   document.getElementById('a-err').style.display='none';
 };
-
-// Stubs — replaced by Firebase module
 window.doAuth=function(){showErr('a-err','Connecting to server, please wait a moment and try again.')};
 window.doSignOut=function(){window._user=null;go('home')};
 window.newChat=function(){};
@@ -467,10 +443,7 @@ window.adminBack=function(t){};
 window.adminToggleBlock=function(){};
 window.adminViewChats=function(){};
 window.adminViewMsgs=function(){};
-
 function showErr(id,msg){var el=document.getElementById(id);el.textContent=msg;el.style.display='block'}
-
-// ─── Stars (works immediately, no Firebase needed) ───────────────────────────
 var _fbRating=0;
 document.querySelectorAll('.star').forEach(function(s){
   s.addEventListener('click',function(){_fbRating=+this.dataset.v;renderStars(_fbRating)});
@@ -478,14 +451,10 @@ document.querySelectorAll('.star').forEach(function(s){
   s.addEventListener('mouseout',function(){renderStars(_fbRating)});
 });
 function renderStars(n){document.querySelectorAll('.star').forEach(function(s,i){s.className='star'+(i<n?' on':'')})}
-
-// ─── Chat send button state ───────────────────────────────────────────────────
 window.refreshSendBtn=function(){
   var v=document.getElementById('chat-inp').value.trim();
   document.getElementById('send-btn').className='send-btn'+(v?' on':'');
 };
-
-// Enter key for auth
 document.getElementById('a-pw').addEventListener('keydown',function(e){if(e.key==='Enter')window.doAuth()});
 </script>
 
@@ -495,7 +464,7 @@ import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut
 import{getFirestore,collection,addDoc,getDocs,doc,setDoc,getDoc,query,orderBy,onSnapshot,updateDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const FB_CFG={apiKey:'AIzaSyB2RZlRNlTONf4xuxjPMcZgedc9wbIhj-4',authDomain:'axid-ai.firebaseapp.com',projectId:'axid-ai',storageBucket:'axid-ai.firebasestorage.app',messagingSenderId:'354519561790',appId:'1:354519561790:web:e2b25803bcd713aea4836f'};
-const GKEY='AIzaSyAb8RN6JNbpO8ho30lRkYVCDOrmU1eNjLHAf_DE-_WuomEEQ_xw';
+const GKEY='AQ.Ab8RN6Kn3GLnJNZuGSmz0188TtJ7Sd6ZA3SbIvYulAPk4EsCPQ';
 const GURL=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GKEY}`;
 const ADMIN='muhammadbilalcp@gmail.com';
 
@@ -503,15 +472,13 @@ const fapp=initializeApp(FB_CFG);
 const auth=getAuth(fapp);
 const db=getFirestore(fapp);
 
-// ─── State ───────────────────────────────────────────────────────────────────
-let sessions=[];  // {id, title, msgs:[{role,content,saved}]}
+let sessions=[];
 let curIdx=null;
 let adminSelUser=null;
 let fbUnsub=null;
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
-// ─── Auth ─────────────────────────────────────────────────────────────────────
 window.doAuth=async function(){
   const email=document.getElementById('a-email').value.trim();
   const pw=document.getElementById('a-pw').value;
@@ -565,7 +532,6 @@ onAuthStateChanged(auth,async u=>{
   }
 });
 
-// ─── Firestore sessions ───────────────────────────────────────────────────────
 function loadFSSessions(){
   if(!window._user)return;
   if(fbUnsub)fbUnsub();
@@ -598,7 +564,6 @@ async function saveToFS(sess){
   }catch(e){console.warn('FS save error:',e)}
 }
 
-// ─── Chat ─────────────────────────────────────────────────────────────────────
 window.newChat=function(){
   const sess={id:'local-'+Date.now(),title:'New chat',msgs:[]};
   sessions.unshift(sess);
@@ -623,9 +588,7 @@ function renderHist(){
 function renderMsgs(){
   const empty=document.getElementById('chat-empty');
   const inner=document.getElementById('msgs-inner');
-  if(curIdx===null||!sessions[curIdx]){
-    empty.style.display='flex';inner.style.display='none';return;
-  }
+  if(curIdx===null||!sessions[curIdx]){empty.style.display='flex';inner.style.display='none';return;}
   const msgs=sessions[curIdx].msgs;
   if(!msgs.length){
     empty.style.display='flex';inner.style.display='none';
@@ -649,20 +612,16 @@ window.sendMsg=async function(){
   if(!text)return;
   if(curIdx===null){window.newChat()}
   inp.value='';refreshSendBtn();
-
   const sess=sessions[curIdx];
   sess.msgs.push({role:'user',content:text});
   if(sess.title==='New chat')sess.title=text.slice(0,40);
   renderHist();renderMsgs();
-
-  // typing indicator
   const inner=document.getElementById('msgs-inner');
   inner.style.display='flex';
   document.getElementById('chat-empty').style.display='none';
   const tid='t'+Date.now();
   inner.insertAdjacentHTML('beforeend',`<div class="typing-row" id="${tid}"><div class="avatar">A</div><div class="typing-dots"><span></span><span></span><span></span></div></div>`);
   document.getElementById('chat-msgs').scrollTop=99999;
-
   try{
     const history=sess.msgs.map(m=>({role:m.role==='user'?'user':'model',parts:[{text:m.content}]}));
     const res=await fetch(GURL,{
@@ -680,13 +639,11 @@ window.sendMsg=async function(){
   }catch(e){
     sess.msgs.push({role:'assistant',content:'Sorry, something went wrong: '+e.message});
   }
-
   document.getElementById(tid)?.remove();
   renderMsgs();
   saveToFS(sess);
 };
 
-// ─── Feedback ─────────────────────────────────────────────────────────────────
 window.submitFB=async function(){
   const text=document.getElementById('fb-text').value.trim();
   if(!_fbRating&&!text){return}
@@ -696,7 +653,6 @@ window.submitFB=async function(){
   document.getElementById('fb-card').innerHTML='<div class="ok-msg">Thank you for your feedback! 🎉</div>';
 };
 
-// ─── Admin ────────────────────────────────────────────────────────────────────
 window._loadAdmin=function(){
   document.getElementById('admin-sub').textContent='Logged in as '+(window._user?.email||'');
   loadAdminUsers();loadAdminFB();
